@@ -43,13 +43,14 @@ public class Book {
     @Column(length = 5000)
     private String contents;
 
-    @Column
+    @Column(length = 5000)
     private String cover_image;
 
     public static Book dtotoBook (BookDTO.Post bookDTO){
         Book book = new Book();
         book.setTitle(bookDTO.getTitle());
         book.setContents(bookDTO.getContents());
+        book.setCover_image(bookDTO.getCoverImage());
         return book;
     }
 }

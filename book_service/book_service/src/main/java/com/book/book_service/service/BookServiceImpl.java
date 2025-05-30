@@ -23,6 +23,7 @@ public class BookServiceImpl implements BookService {
     // 등록 POST 제목, 내용, 커버 이미지
     @Override
     public Book insertBook(BookDTO.Post bookDTO) {
+
         return bookRepository.save(Book.dtotoBook(bookDTO));
     }
 
@@ -40,6 +41,7 @@ public class BookServiceImpl implements BookService {
         Book b = findBook(id);
         b.setTitle(bookDTO.getTitle());
         b.setContents(bookDTO.getContents());
+        b.setCover_image(bookDTO.getCoverImage());
         return bookRepository.save(b);
     }
 
