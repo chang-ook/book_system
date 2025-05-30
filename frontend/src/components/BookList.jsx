@@ -15,7 +15,7 @@ function BookList() {
   return (
     <div className="book-list">
       {books.map(book => (
-        <div key={book.bookId} onClick={() => navigate(`/books/${book.bookId}`)}>
+        <div key={book.bookId} onClick={() => navigate(`/books/${book.id}`)}>
           <img src={book.cover_image} alt="cover" width="100" />
           <p>{book.title}</p>
         </div>
