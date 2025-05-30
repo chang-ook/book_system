@@ -25,7 +25,7 @@ function BookDetail() {
 
   return (
     <div>
-      <img src={book.coverImage} alt="cover" width="100" />
+      <img src={book.cover_image} alt="cover" width="100" />
       <h2>{book.title}</h2>
       <p>{book.content}</p>
       <button onClick={() => navigate(`/books/edit/${id}`)}>수정</button>

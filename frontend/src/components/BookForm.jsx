@@ -43,7 +43,7 @@ function BookForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('http://localhost:8080/api/v1/books', {
-      title, contents, coverImage: imageUrl
+      title, contents, cover_image: imageUrl
     }).then(() => {
       alert('등록 완료');
       navigate('/');
