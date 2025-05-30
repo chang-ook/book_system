@@ -2,7 +2,7 @@ package com.book.book_service.controller;
 
 import com.book.book_service.domain.Book;
 import com.book.book_service.dto.BookDTO;
-import com.example.book.service.BookService;
+import com.book.book_service.service.BookService;
 import jakarta.validation.Valid;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
