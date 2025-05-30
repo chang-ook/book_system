@@ -34,4 +34,6 @@ public class Book {
     @NotEmpty
     @Column(length = 5000)
     private String contents;
+
+
 }
