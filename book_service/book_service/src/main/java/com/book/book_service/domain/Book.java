@@ -1,5 +1,6 @@
 package com.book.book_service.domain;
 
+import com.book.book_service.dto.BookDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity
 @AllArgsConstructor
@@ -25,15 +26,23 @@ public class Book {
 
     @NotEmpty
     @Column(nullable = false)
-    private Date upload_date;
+    private LocalDate upload_date;
 
     @NotEmpty
     @Column(nullable = false)
-    private Date update_date;
+    private LocalDate update_date;
 
     @NotEmpty
     @Column(length = 5000)
     private String contents;
 
+    @Column
+    private String cover_image;
 
+    public static Book dtotoBook (BookDTO bookDTO){
+        Book book = new Book();
+        book.setTitle(book.getTitle());
+        book.setContents(book.getTitle());
+        return book;
+    }
 }
