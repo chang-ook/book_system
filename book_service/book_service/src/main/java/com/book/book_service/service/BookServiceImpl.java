@@ -1,7 +1,7 @@
-package com.example.book.service;
+package com.book.book_service.service;
 
-import com.example.book.domain.Book;
-import com.example.book.repository.BookRepository;
+import com.book.book_service.domain.Book;
+import com.book.book_service.repository.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,17 +13,19 @@ import java.util.List;
 public class BookServiceImpl implements BookService {
     private final BookRepository bookRepository;
 
-    @Override
-    public Book insertBook(Book book) {
-        book.setStatus(Book.Status.AVAILABLE);
-        return bookRepository.save(book);
-    }
-
+    //도서 목록 확인
     @Override
     public List<Book> findBooks() {
         return bookRepository.findAll();
     }
 
+    // 등록 POST 제목, 내용, 커버 이미지
+    @Override
+    public Book insertBook(Book book) {
+        return bookRepository.save(book);
+    }
+
+    // 도서 상세 정보 조회
     @Override
     public Book findBook(Long id) {
         return bookRepository.findById(id).orElseThrow(
@@ -31,24 +33,17 @@ public class BookServiceImpl implements BookService {
         );
     }
 
+    // 도서 수정
     @Override
     public Book updateBook(Long id, Book book) {
         Book b = findBook(id);
 
         b.setTitle(book.getTitle());
-        b.setSubTitle(book.getSubTitle());
-        b.setAuthor(book.getAuthor());
-        b.setStatus(book.getStatus());
+        b.setContents(book.getContents());
         return bookRepository.save(b);
     }
 
-    @Override
-    public Book updateBook(Long id, Book.Status status) {
-        Book b = findBook(id);
-        b.setStatus(status);
-        return bookRepository.save(b);
-    }
-
+    // 도서 삭제
     @Override
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
