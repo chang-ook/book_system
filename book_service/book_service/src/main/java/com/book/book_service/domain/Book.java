@@ -43,7 +43,7 @@ public class Book {
     @Column(length = 5000)
     private String contents;
 
-    @Column(length = 5000)
+    @Column(length = 50000)
     private String cover_image;
 
     public static Book dtotoBook (BookDTO.Post bookDTO){
