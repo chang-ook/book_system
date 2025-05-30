@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+
 public class BookDTO {
 
     @Getter
@@ -27,12 +29,6 @@ public class BookDTO {
         private String coverImage;
     }
 
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Patch {
-    }
     @Getter
     @Setter
     @NoArgsConstructor

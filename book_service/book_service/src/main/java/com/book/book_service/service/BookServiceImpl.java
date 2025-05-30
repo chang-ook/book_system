@@ -1,6 +1,7 @@
 package com.book.book_service.service;
 
 import com.book.book_service.domain.Book;
+import com.book.book_service.dto.BookDTO;
 import com.book.book_service.repository.BookRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +22,8 @@ public class BookServiceImpl implements BookService {
 
     // 등록 POST 제목, 내용, 커버 이미지
     @Override
-    public Book insertBook(Book book) {
-        return bookRepository.save(book);
+    public Book insertBook(BookDTO.Post bookDTO) {
+        return bookRepository.save(Book.dtotoBook(bookDTO));
     }
 
     // 도서 상세 정보 조회
@@ -35,11 +36,10 @@ public class BookServiceImpl implements BookService {
 
     // 도서 수정
     @Override
-    public Book updateBook(Long id, Book book) {
+    public Book updateBook(Long id, BookDTO.Put bookDTO) {
         Book b = findBook(id);
-
-        b.setTitle(book.getTitle());
-        b.setContents(book.getContents());
+        b.setTitle(bookDTO.getTitle());
+        b.setContents(bookDTO.getContents());
         return bookRepository.save(b);
     }
 

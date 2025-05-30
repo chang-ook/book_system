@@ -7,6 +7,9 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
@@ -15,6 +18,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Getter
 @Setter
+@EntityListeners(AuditingEntityListener.class)
 public class Book {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +28,12 @@ public class Book {
     @Column(nullable = false, length = 64)
     private String title;
 
-    @NotEmpty
-    @Column(nullable = false)
+    @CreatedDate
+    @Column
     private LocalDate upload_date;
 
-    @NotEmpty
-    @Column(nullable = false)
+    @LastModifiedDate
+    @Column
     private LocalDate update_date;
 
     @NotEmpty
@@ -39,10 +43,10 @@ public class Book {
     @Column
     private String cover_image;
 
-    public static Book dtotoBook (BookDTO bookDTO){
+    public static Book dtotoBook (BookDTO.Post bookDTO){
         Book book = new Book();
-        book.setTitle(book.getTitle());
-        book.setContents(book.getTitle());
+        book.setTitle(bookDTO.getTitle());
+        book.setContents(bookDTO.getContents());
         return book;
     }
 }
