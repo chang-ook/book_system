@@ -1,18 +1,19 @@
-import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import Layout from './components/Layout';
-import Home from './pages/Home';
-import BookList from './pages/BookList';
+import MainPage from './pages/MainPage';
+import RegisterPage from './pages/RegisterPage';
+import DetailPage from './pages/DetailPage';
+import EditPage from './pages/EditPage';
 
-const App = () => (
-  <Router>
-    <Layout>
+function App() {
+  return (
+    <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/books" element={<BookList />} />
+        <Route path="/" element={<MainPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/books/:id" element={<DetailPage />} />
+        <Route path="/books/edit/:id" element={<EditPage />} />
       </Routes>
-    </Layout>
-  </Router>
-);
-
+    </Router>
+  );
+}
 export default App;
