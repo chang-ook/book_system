@@ -4,12 +4,12 @@ import { useNavigate } from 'react-router-dom';
 
 function BookForm() {
   const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
+  const [contents, setContents] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const navigate = useNavigate();
 
   const handleImageGenerate = () => {
-    axios.post('http://localhost:8080/api/v1/cover', { title, content })
+    axios.post('http://localhost:8080/api/v1/cover', { title, contents })
       .then(res => setImageUrl(res.data.imageUrl))
       .catch(err => console.error(err));
   };
@@ -17,7 +17,7 @@ function BookForm() {
   const handleSubmit = (e) => {
     e.preventDefault();
     axios.post('http://localhost:8080/api/v1/books', {
-      title, content, coverImage: imageUrl
+      title, contents, coverImage: imageUrl
     }).then(() => {
       alert('등록 완료');
       navigate('/');
@@ -30,7 +30,6 @@ function BookForm() {
 
   return (
     <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center' }}>책 등록</h2>
       <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-start', marginTop: '30px' }}>
         {/* 이미지 영역 */}
         <div style={{ textAlign: 'center' }}>
@@ -50,8 +49,8 @@ function BookForm() {
             <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required style={{ width: '300px', height: '30px' }} />
           </div>
           <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="content">2. 작품에 대한 소개를 입력해주세요</label><br />
-            <input id="content" type="text" value={content} onChange={e => setContent(e.target.value)} style={{ width: '300px', height: '80px' }} />
+            <label htmlFor="contents">2. 작품에 대한 소개를 입력해주세요</label><br />
+            <input id="contents" type="text" value={contents} onChange={e => setContents(e.target.value)} style={{ width: '300px', height: '80px' }} />
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
             <button type="submit">등록</button>
