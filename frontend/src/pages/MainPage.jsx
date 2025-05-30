@@ -9,7 +9,7 @@ function MainPage() {
   <div style={{
     backgroundColor: 'white',
     borderRadius: '16px',
-    maxWidth: '800px',
+    maxWidth: '1000px',
     margin: '0 auto',
     padding: '40px',
     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'

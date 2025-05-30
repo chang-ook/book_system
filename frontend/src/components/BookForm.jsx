@@ -56,10 +56,10 @@ function BookForm() {
 
   return (
     <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-start', marginTop: '30px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'flex-start', marginTop: '30px', flexWrap: 'wrap', gap: '20px' }}>
         {/* 이미지 영역 */}
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ width: '360px', height: '480px', border: '1px solid #aaa', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fafafa' }}>
+        <div style={{ textAlign: 'center', flex: '1 1 360px', maxWidth: '360px', boxSizing: 'border-box', marginBottom: '20px' }}>
+          <div style={{ width: '100%', height: '480px', border: '1px solid #aaa', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fafafa' }}>
             {imageUrl ? <img src={imageUrl} alt="cover" width="180" height="260" /> : <span>표지 미리보기</span>}
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
@@ -71,7 +71,7 @@ function BookForm() {
         {/* 입력 영역 */}
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: '20px' }}>
-            <label htmlFor="title">1. 작품 제목을 입력해주세요</label><br />
+          <label htmlFor="title" >1. 작품 제목을 입력해주세요</label><br />
             <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required style={{ width: '300px', height: '30px' }} />
           </div>
           <div style={{ marginBottom: '20px' }}>
