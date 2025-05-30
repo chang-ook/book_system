@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.util.Date;
 
@@ -19,15 +21,16 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
     @NotEmpty
     @Column(nullable = false, length = 64)
     private String title;
 
-    @NotEmpty
+    @CreatedDate
     @Column(nullable = false)
     private Date upload_date;
 
-    @NotEmpty
+    @LastModifiedDate
     @Column(nullable = false)
     private Date update_date;
 
@@ -35,5 +38,7 @@ public class Book {
     @Column(length = 5000)
     private String contents;
 
+    @Column
+    private String cover_image;
 
 }
