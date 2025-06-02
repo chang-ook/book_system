@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
+import { Button, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, TextField } from '@mui/material';
 
 function BookForm() {
   const [title, setTitle] = useState('');
@@ -9,18 +9,24 @@ function BookForm() {
   const [imageUrl, setImageUrl] = useState('');
   const [apiKey, setApiKey] = useState('');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // 🔥 로딩 상태 추가
   const navigate = useNavigate();
+  const [prompt, setPrompt] = useState('');
 
   const handleOpenDialog = () => setIsDialogOpen(true);
   const handleCloseDialog = () => setIsDialogOpen(false);
 
   const handleImageGenerate = () => {
     if (!apiKey) return alert('API 키를 입력해주세요.');
+    if (!title || !contents) return alert('제목과 내용을 먼저 입력해주세요.');
 
+    const generatedPrompt = `책 제목: ${title}, 내용: ${contents}. 책 제목목을 보고 이미지를 생성해줘줘.`;
+
+    setIsLoading(true); // 🔥 이미지 생성 시작
     axios.post(
       'https://api.openai.com/v1/images/generations',
       {
-        prompt: `${title} - ${contents}`,
+        prompt: generatedPrompt,
         n: 1,
         size: '512x512',
       },
@@ -33,6 +39,7 @@ function BookForm() {
     ).then(res => {
       const image = res.data.data[0].url;
       setImageUrl(image);
+      setIsLoading(false); // 🔥 이미지 생성 완료
       handleCloseDialog();
     }).catch(err => {
       console.error(err);
@@ -60,7 +67,10 @@ function BookForm() {
         {/* 이미지 영역 */}
         <div style={{ textAlign: 'center', flex: '1 1 360px', maxWidth: '360px', boxSizing: 'border-box', marginBottom: '20px' }}>
           <div style={{ width: '100%', height: '480px', border: '1px solid #aaa', borderRadius: '12px', marginBottom: '20px', display: 'flex', justifyContent: 'center', alignItems: 'center', backgroundColor: '#fafafa' }}>
-            {imageUrl ? <img src={imageUrl} alt="cover" width="180" height="260" /> : <span>표지 미리보기</span>}
+            {isLoading ? (<CircularProgress/>)
+            : imageUrl ? (<img src={imageUrl} alt='cover' style={{width:"90%", height:"90%", borderRadius : "12px"}}/>)
+            : (<span>표지 미리보기</span>)}
+          
           </div>
           <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
             <Button onClick={handleOpenDialog} variant="contained" color="primary">이미지 생성</Button>
