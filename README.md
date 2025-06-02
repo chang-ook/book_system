@@ -1,7 +1,7 @@
 # 도서관리시스템_27조
 
 ## 도메인 설계
-<img src = "https://github.com/user-attachments/assets/2a930a9d-7ab7-42f5-b901-a4d427f11c7f">
+<img src = "https://github.com/user-attachments/assets/2a930a9d-7ab7-42f5-b901-a4d427f11c7f" width="60%" height="60%">
 
 ## API명세서
 
