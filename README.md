@@ -547,6 +547,36 @@ export default BookForm;
 - 가운데 정렬된 카드 스타일의 컨테이너 안에 `BookDetail` 컴포넌트를 렌더링합니다.
 - 사용자 친화적인 UI 디자인으로 도서 상세 정보를 깔끔하게 표현합니다.
 
+```jsx
+// DetailPage.jsx
+import React from 'react';
+import BookDetail from '../components/BookDetail';
+
+function DetailPage() {
+  return (
+    <div style={{ backgroundColor: '#e6f7f4', minHeight: '100vh', padding: '50px 20px' }}>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '16px',
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '40px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+      }}>
+        <h2 style={{
+          textAlign: 'center',
+          fontFamily: 'Noto Sans KR',
+          marginBottom: '20px',
+          fontSize: '28px'}}>📑 도서 상세 조회</h2>
+          <hr></hr>
+        <BookDetail />
+      </div>
+    </div>
+  );
+}
+export default DetailPage;
+```
+
 ### BookDetail.jsx
 - 도서 정보를 API 서버(`http://localhost:8080/api/v1/books/:id`)에서 받아와 화면에 출력합니다.
 - React Router의 `useParams()`를 이용해 URL에서 도서 ID를 가져옵니다.
@@ -554,7 +584,58 @@ export default BookForm;
 - `MUI`의 `Button` 컴포넌트를 활용한 액션 버튼 제공.
 - 삭제, 수정, 목록 페이지 이동 기능을 제공합니다.
 
----
+```jsx
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Button } from '@mui/material';
+function BookDetail() {
+  const [book, setBook] = useState(null);
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/v1/books/${id}`)
+      .then(res => setBook(res.data))
+      .catch(err => console.error(err));
+  }, [id]);
+
+  const handleDelete = () => {
+    axios.delete(`http://localhost:8080/api/v1/books/${id}`)
+      .then(() => {
+        alert('삭제 완료');
+        navigate('/');
+      });
+  };
+
+  if (!book) return <div>로딩 중...</div>;
+return (
+  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '30px', alignItems: 'flex-start', padding: '20px' }}>
+    {/* 왼쪽 이미지 */}
+    <img src={book.cover_image} alt="cover" style={{ width: "100%", maxWidth: "360px", borderRadius: '8px', flexShrink: 0 }} />
+
+    {/* 오른쪽 텍스트 영역 */}
+    <div style={{ flex: 1 }}>
+      <h2 style={{ marginBottom: '10px' }}>{book.title}</h2>
+      <p style={{ marginBottom: '20px' }}>{book.contents}</p>
+      <p style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+        최초 등록일: {book.upload_date?.substring(0, 10)}
+      </p>
+      <p style={{ fontSize: '12px', color: '#888', marginTop: '4px' }}>
+        마지막 수정일: {book.update_date?.substring(0, 10)}
+      </p>
+      <div style={{ display: 'flex', gap: '10px' }}>
+        <Button variant="contained" color="primary" onClick={() => navigate(`/books/edit/${id}`)}>수정</Button>
+        <Button variant="contained" color="primary" onClick={handleDelete}>삭제</Button>
+        <Button variant="contained" color="primary" onClick={() => navigate(`/`)}>책 목록보기</Button>
+      </div>
+    </div>
+  </div>
+);
+}
+export default BookDetail;
+
+```
 
 ### 주요 기능
 
@@ -567,8 +648,6 @@ export default BookForm;
 | 목록 보기 | 도서 목록 페이지(`/`)로 이동 |
 | 예외 처리 | 로딩 중 상태 표시, 에러 발생 시 콘솔 출력 |
 
----
-
 ### 사용 기술
 
 - **React** - UI 구성 및 상태 관리
@@ -576,8 +655,6 @@ export default BookForm;
 - **Axios** - 비동기 HTTP 통신
 - **Material-UI (MUI)** - 버튼 컴포넌트 및 디자인 요소 활용
 - **CSS-in-JS** - 인라인 스타일링으로 빠른 UI 커스터마이징
-
----
 
 ### UI 미리보기
 
