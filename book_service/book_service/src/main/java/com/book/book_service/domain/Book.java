@@ -46,6 +46,10 @@ public class Book {
     @Column(length = 50000)
     private String cover_image;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
     public static Book dtotoBook (BookDTO.Post bookDTO){
         Book book = new Book();
         book.setTitle(bookDTO.getTitle());

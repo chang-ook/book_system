@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
 
 public class BookDTO {
 
@@ -17,6 +16,7 @@ public class BookDTO {
         private String title;
         private String contents;
         private String coverImage;
+        private Long userID;
     }
 
     @Getter
