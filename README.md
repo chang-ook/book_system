@@ -1220,4 +1220,73 @@ export default BookForm;
 - **하단 다이얼로그**: OpenAI API 키를 입력받는 팝업
 
 ---
+# 📘 BookList.jsx
+
+`BookList.jsx`는 도서 목록을 카드 형태로 렌더링하는 컴포넌트입니다.  
+React와 Axios, React Router를 활용하여 백엔드에서 도서 데이터를 받아와 리스트로 출력하고, 각 도서를 클릭하면 상세 페이지로 이동합니다.
+
+---
+
+## 📌 주요 기능
+
+- 📚 전체 도서 목록 불러오기 (`GET /api/v1/books`)
+- 🔍 도서 클릭 시 상세 페이지로 이동 (`/books/{id}`)
+- 🖼️ 도서 표지 이미지 출력
+- ✨ 마우스 호버 시 부드러운 카드 애니메이션
+
+---
+
+## 🛠 사용 기술
+
+- React (`useEffect`, `useState`)
+- Axios
+- React Router DOM (`useNavigate`)
+- 인라인 스타일을 활용한 CSS 처리
+
+---
+
+## 🖼️ 화면 구성
+
+| 요소          | 설명                                      |
+|---------------|-------------------------------------------|
+| 카드 레이아웃 | 도서 리스트를 Flexbox로 정렬               |
+| 표지 이미지   | 도서의 `cover_image` URL을 통해 출력       |
+| 제목 출력     | 도서의 `title` 출력                       |
+| 업로드 날짜   | `upload_date`를 `YYYY-MM-DD`로 출력       |
+| 마우스 호버   | `transform: translateY(-5px)` 효과 적용   |
+
+---
+
+## 📄 예시 코드 구조
+
+```jsx
+useEffect(() => {
+  axios.get('http://localhost:8080/api/v1/books')
+    .then(res => setBooks(res.data))
+    .catch(err => console.error(err));
+}, []);
+
+{books.map(book => (
+  <div key={book.bookId} onClick={() => navigate(`/books/${book.id}`)}>
+    <img src={book.cover_image} />
+    <p>{book.title}</p>
+    <p>{book.upload_date?.substring(0, 10)}</p>
+  </div>
+))}
+```
+
+---
+
+## 📎 기타 사항
+
+- 백엔드 API 주소는 `http://localhost:8080`으로 설정되어 있으며, 실제 배포 시에는 환경 변수로 관리하는 것이 좋습니다.
+- 도서 ID로 접근하는 라우터가 `/books/:id` 형태로 연결되어 있어야 합니다.
+
+---
+
+## 📚 관련 파일
+
+- `MainPage.jsx`  
+  → 해당 컴포넌트를 사용하여 도서 목록 메인 화면 구성
+
 
