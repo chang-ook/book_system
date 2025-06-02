@@ -255,6 +255,175 @@ public class BookDTO {
 - 각 컨트롤러 메서드에서 필요한 DTO 타입만 명확하게 사용할 수 있도록 함
 - 향후 `@NotBlank`, `@Size`, `@Pattern` 등의 유효성 검증 어노테이션을 추가하여 입력 값에 대한 제어 강화 가능
 
+## GlobalExceptionHandler
+
+### 주요 세부사항
+- `@ControllerAdvice`를 이용하여 모든 컨트롤러에서 발생하는 예외를 한 곳에서 처리
+- `EntityNotFoundException`, `IllegalArgumentException`, 일반 `Exception`을 각각 다른 HTTP 상태 코드로 응답
+- 로깅을 통해 예외 발생 상황 기록
+
+### 주요 기능
+
+| 상황                  | HTTP 상태 코드                   | 설명                                        |
+|----------------------|-----------------------------------|-----------------------------------------|
+| 책이 없을 때 처리 | 404 NOT FOUND                 | 요청한 책이 존재하지 않음            |
+| 잘못된 요청 처리  | 400 BAD REQUEST                | 요청 파라미터가 올바르지 않음      |
+| 기타 예외 처리     | 500 INTERNAL SERVER ERROR | 서버 내부에서 알 수 없는 에러 발생 |
+
+
+### 전체 코드
+```java
+@ControllerAdvice
+@Slf4j
+public class GlobalExceptionHandler {
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
+        log.warn("EntityNotFoundException: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("ERROR 404: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex) {
+        log.warn("IllegalArgumentException: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("ERROR 400: " + ex.getMessage());
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleGeneralException(Exception ex) {
+        log.error("Unexpected error occurred", ex);
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("ERROR 500: 서버 에러가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+}
+```
+
+## BookRepository
+
+### 주요 세부사항
+- Spring Data JPA의 `JpaRepository`를 상속하여 기본적인 CRUD 메서드를 자동으로 구현  
+- `Book` 엔티티와 `Long` 타입의 기본 키를 대상으로 작동  
+- 별도의 구현 없이 인터페이스 선언만으로 데이터베이스 접근 가능  
+
+### 주요 기능
+
+| 기능               | 설명                                    |
+|--------------------|---------------------------------------|
+| 데이터 조회        | 모든 책 목록 조회, 단일 책 조회 가능   |
+| 데이터 등록        | 새로운 책 데이터 저장                   |
+| 데이터 수정        | 기존 책 데이터 업데이트                 |
+| 데이터 삭제        | 특정 책 데이터 삭제                     |
+
+### 전체 코드
+
+```java
+package com.book.book_service.repository;
+
+import com.book.book_service.domain.Book;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BookRepository extends JpaRepository<Book, Long> {
+}
+```
+
+## BookService
+
+### 주요 세부사항
+- 도서 관련 비즈니스 로직을 담당하는 서비스 계층  
+- 도서 조회, 등록, 수정, 삭제 기능을 메서드로 정의  
+- `BookRepository`를 통해 DB와 상호작용  
+- 도서 조회 시, 없는 책에 대해서는 `EntityNotFoundException`을 발생시켜 전역 예외 처리기에서 처리
+
+### 주요 기능
+
+| 메서드명          | 기능 설명                          |
+|-------------------|----------------------------------|
+| `findBooks()`     | 전체 도서 목록 조회               |
+| `insertBook()`    | 새로운 도서 등록                  |
+| `findBook(Long id)` | 특정 ID의 도서 상세 조회 (없으면 예외 발생) |
+| `updateBook(Long id, BookDTO.Put bookDTO)` | 특정 도서 정보 수정              |
+| `deleteBook(Long id)` | 특정 도서 삭제                    |
+
+### 전체 코드
+
+```java
+package com.book.book_service.service;
+
+import com.book.book_service.domain.Book;
+import com.book.book_service.dto.BookDTO;
+
+import java.util.List;
+
+public interface BookService {
+    List<Book> findBooks();
+    Book insertBook(BookDTO.Post bookDTO);
+    Book findBook(Long id);
+    Book updateBook(Long id, BookDTO.Put bookDTO);
+    void deleteBook(Long id);
+}
+```
+
+```java
+package com.book.book_service.service;
+
+import com.book.book_service.domain.Book;
+import com.book.book_service.dto.BookDTO;
+import com.book.book_service.repository.BookRepository;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class BookServiceImpl implements BookService {
+    private final BookRepository bookRepository;
+
+    // 도서 목록 확인
+    @Override
+    public List<Book> findBooks() {
+        return bookRepository.findAll();
+    }
+
+    // 도서 등록 (POST) - 제목, 내용, 커버 이미지 포함
+    @Override
+    public Book insertBook(BookDTO.Post bookDTO) {
+        return bookRepository.save(Book.dtotoBook(bookDTO));
+    }
+
+    // 도서 상세 정보 조회 (없으면 EntityNotFoundException 발생)
+    @Override
+    public Book findBook(Long id) {
+        return bookRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("책을 찾을 수 없습니다.")
+        );
+    }
+
+    // 도서 수정
+    @Override
+    public Book updateBook(Long id, BookDTO.Put bookDTO) {
+        Book b = findBook(id);
+        b.setTitle(bookDTO.getTitle());
+        b.setContents(bookDTO.getContents());
+        b.setCover_image(bookDTO.getCoverImage());
+        return bookRepository.save(b);
+    }
+
+    // 도서 삭제
+    @Override
+    public void deleteBook(Long id) {
+        bookRepository.deleteById(id);
+    }
+}
+```
 
 
 ## 프론트엔드
