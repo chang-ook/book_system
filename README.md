@@ -600,6 +600,20 @@ public class BookServiceImpl implements BookService {
 
 ## 프론트엔드
 
+## 라우팅 정보
+
+| 경로(Path)            | 컴포넌트(Component)        | 설명                             |
+|------------------------|----------------------------|----------------------------------|
+| `/`                    | `HomePage`                 | 앱 시작 페이지 (홈)              |
+| `/register`            | `RegisterPage`             | 도서 등록 페이지                 |
+| `/books/:id`           | `DetailPage`               | 도서 상세 조회 페이지            |
+| `/books/edit/:id`      | `EditPage`                 | 도서 수정 페이지                 |
+| `/login`               | `LoginPage`                | 로그인 페이지                    |
+| `/signup`              | `RegisterLoginPage`        | 회원가입 페이지                  |
+| `/main`                | `MainPage`                 | 메인 도서 목록 페이지            |
+
+> 참고: `:id`는 도서의 고유 ID로 동적으로 라우팅됩니다.
+
 ## BookForm.jsx
 
 React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
