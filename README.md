@@ -92,6 +92,199 @@ public class Users {
     private List<Book> books;
 }
 ```
+## BookController
+
+'BookController'는책 등록, 조회, 수정, 삭제 기능을 제공하는 도서 관리 API
+Spring Boot 기반 RESTful 구조로 설계되었으며, 프론트엔드(React 등)와 연동되며, `/api/v1/books` 경로를 통해 요청을 처리
+
+---
+
+### 주요 세부 사항
+
+- `@RestController`, `@RequestMapping("api/v1/books")`를 사용하여 REST API로 동작
+- `@CrossOrigin(origins = "http://localhost:3000")` 설정을 통해 CORS 문제 해결
+- `@RequiredArgsConstructor`를 사용하여 `BookService` 의존성 주입
+- `@Valid @RequestBody`를 통해 요청 본문 검증 처리
+
+---
+
+### 주요 기능
+
+| HTTP Method | URI                   | 설명                       |
+|-------------|------------------------|----------------------------|
+| POST        | `/api/v1/books`        | 도서 등록 (책 정보 입력)     |
+| PUT         | `/api/v1/books/{id}`   | 도서 수정 (기존 책 정보 수정) |
+| DELETE      | `/api/v1/books/{id}`   | 도서 삭제                   |
+| GET         | `/api/v1/books/{id}`   | 특정 도서 상세 조회          |
+| GET         | `/api/v1/books`        | 전체 도서 목록 조회          |
+
+---
+
+### 전체 코드
+
+```java
+package com.book.book_service.controller;
+
+import com.book.book_service.domain.Book;
+import com.book.book_service.dto.BookDTO;
+import com.book.book_service.service.BookService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("api/v1/books")
+@RequiredArgsConstructor
+public class BookController {
+
+    private final BookService bookService;
+
+    @PostMapping
+    public Book insertBook(@Valid @RequestBody BookDTO.Post dto){
+        return bookService.insertBook(dto);
+    }
+
+    @PutMapping("/{bookId}")
+    public Book updateBook(@PathVariable("bookId") Long id, @Valid @RequestBody BookDTO.Put dto){
+        return bookService.updateBook(id, dto);
+    }
+
+    @DeleteMapping("/{bookId}")
+    public void deleteBook(@PathVariable("bookId") Long id){
+        bookService.deleteBook(id);
+    }
+
+    @GetMapping("/{bookId}")
+    public Book getBook(@PathVariable("bookId") Long id){
+        return bookService.findBook(id);
+    }
+
+    @GetMapping
+    public List<Book> getBooks() {
+        return bookService.findBooks();
+    }
+}
+```
+### 메서드별 설명
+
+- `insertBook(BookDTO.Post dto)`  
+  → `POST /api/v1/books` 요청을 받아 도서를 등록. `BookDTO.Post`를 통해 제목, 내용, 표지 이미지 데이터를 전달받아 `Book` 객체로 저장
+
+- `updateBook(Long id, BookDTO.Put dto)`  
+  → `PUT /api/v1/books/{bookId}` 요청을 처리. 도서의 식별자(ID)를 경로로 받고, 수정할 데이터는 `BookDTO.Put`으로 전달받아 도서 정보를 갱신
+
+- `deleteBook(Long id)`  
+  → `DELETE /api/v1/books/{bookId}` 요청을 처리. 해당 ID에 해당하는 도서를 삭제
+
+- `getBook(Long id)`  
+  → `GET /api/v1/books/{bookId}` 요청을 통해 단일 도서 상세 정보를 반환
+
+- `getBooks()`  
+  → `GET /api/v1/books` 요청을 통해 전체 도서 목록을 조회
+
+### 반환 객체
+
+- 모든 API는 `Book` 도메인 객체를 JSON 형태로 반환
+- 향후 응답의 일관성을 위해 `BookDTO.Response`로 리턴 타입을 리팩토링할 수 있음.
+
+## BookDTO
+`BookDTO`는 책 등록, 수정, 조회에 사용되는 데이터 전달 객체(Data Transfer Object) 
+API 요청(Request) 및 응답(Response) 시 클라이언트와 서버 간 데이터 전달을 위해 사용
+
+---
+
+### 주요 세부 사항
+- `BookDTO`는 static 내부 클래스로 구성되어 역할별 DTO를 명확히 분리함
+- `@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`를 사용하여 필수 메서드 자동 생성
+- 클라이언트 요청과 응답 시 `Book` 엔티티가 아닌 DTO를 사용하여 도메인 보호 및 유연성 확보
+
+---
+
+### 구성 클래스
+
+| 클래스 이름         | 용도 설명                         |
+|--------------------|----------------------------------|
+| `BookDTO.Post`     | 도서 등록 요청에 사용되는 DTO      |
+| `BookDTO.Put`      | 도서 수정 요청에 사용되는 DTO      |
+| `BookDTO.Response` | 도서 응답 데이터 반환용 DTO        |
+
+- `Post`  
+  → `도서 등록 요청` 시 사용되는 DTO. 제목, 내용, 표지 이미지 정보 등을 포함하며, 컨트롤러에서 `@Valid @RequestBody`로 검증 처리된다.
+- `Put`  
+  → `도서 수정 요청` 시 사용되는 DTO. 등록과 동일한 필드 구조이며, 기존 도서를 업데이트할 때 사용된다.
+- `Response`  
+  → `도서 상세 조회 응답` 또는 리스트 조회 시 사용되는 DTO. 고유 ID를 포함하여 클라이언트에 책 정보를 전달한다.
+---
+
+### 필드 구성
+
+#### BookDTO.Post / Put
+
+| 필드명       | 타입     | 설명                           | 사용 클래스   |
+|--------------|----------|--------------------------------|----------------|
+| `title`      | String   | 도서 제목                      | Post, Put, Response |
+| `contents`   | String   | 도서 내용 또는 소개             | Post, Put, Response |
+| `coverImage` | String   | 도서 표지 이미지 경로 또는 URL  | Post, Put, Response |
+| `id`         | Long     | 도서 고유 식별자 (응답용)       | Response only |
+
+---
+
+### 전체 코드
+
+```java
+package com.book.book_service.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDateTime;
+
+public class BookDTO {
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Post {
+        private String title;
+        private String contents;
+        private String coverImage;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Put {
+        private String title;
+        private String contents;
+        private String coverImage;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class Response {
+        private Long id;
+        private String title;
+        private String contents;
+        private String coverImage;
+    }
+}
+```
+### 설계 의도
+
+- 단일 BookDTO 클래스 내에 역할별 클래스를 정리하여 도서 도메인 관련 구조를 일관성 있게 유지
+- 각 컨트롤러 메서드에서 필요한 DTO 타입만 명확하게 사용할 수 있도록 함
+- 향후 `@NotBlank`, `@Size`, `@Pattern` 등의 유효성 검증 어노테이션을 추가하여 입력 값에 대한 제어 강화 가능
+
+
 ## UserController
 
 `UserController`는 사용자 회원가입과 로그인을 처리하는 API입니다.  
