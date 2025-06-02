@@ -52,7 +52,7 @@ const prompt = `너는 세계적인 책 평론가이자 북 큐레이터야.
     axios.post(
       'https://api.openai.com/v1/chat/completions',
       {
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [{ role: 'user', content: prompt }],
       },
       {

@@ -1,44 +1,52 @@
-import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button } from '@mui/material';
+import React from 'react';
+import { Box, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
-const Home = () => {
+function Home() {
   const navigate = useNavigate();
-  const [backendMessage, setBackendMessage] = useState('');
-
-  useEffect(() => {
-    axios.get('http://localhost:8080/api/hello')
-      .then(res => setBackendMessage(res.data))
-      .catch(err => setBackendMessage('백엔드 API 호출 실패'));
-  }, []);
 
   return (
-    <Box textAlign="center" mt={10} px={2}>
-      <Typography variant="h3" gutterBottom>
-        도서 관리 시스템
-      </Typography>
-      <Typography variant="subtitle1" gutterBottom>
-        나의 도서를 등록하고, 목록을 확인하고, AI로 표지도 만들어보세요.
-      </Typography>
-
-      {/* 백엔드 메시지 보여주기 */}
-      {backendMessage && (
-        <Typography variant="h6" color="secondary" gutterBottom>
-          {backendMessage}
+    <Box sx={{ width: '100%', minHeight: '100vh', bgcolor: '#fff' }}>
+      {/* 상단 배너 */}
+      <Box sx={{ bgcolor: '#e6f7f4', textAlign: 'center', py: 1 }}>
+        <Typography variant="body2">
+          누구나 작가가 될 수 있는 이곳에서 당신의 이야기를 천천히, 그리고 진심으로 꺼내보세요.
         </Typography>
-      )}
+      </Box>
 
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate('/books')}
-        sx={{ mt: 4 }}
+      {/* 메인 이미지 + 메시지 */}
+      <Box
+        sx={{
+          position: 'relative',
+          width: '100%',
+          height: { xs: '90vh', md: '80vh' },
+          backgroundImage: `url('https://i.pinimg.com/1200x/19/dc/d8/19dcd8bedf0af12873f19ccdf36530c0.jpg')`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          display: 'flex',
+          alignItems: 'center',
+          px: { xs: 3, md: 10 },
+        }}
       >
-        도서 목록 보기
-      </Button>
+        <Box sx={{ maxWidth: '500px', color: '#fff' }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom>
+            걷는 길 위에,<br />
+            이야기가 피어납니다.<br />
+            걷기가 서재, 작가의 산책
+          </Typography>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ mt: 3 }}
+            onClick={() => navigate('/login')}
+          >
+            시작하기
+          </Button>
+        </Box>
+      </Box>
     </Box>
   );
-};
+}
 
 export default Home;
+
