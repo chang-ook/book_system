@@ -22,23 +22,66 @@ function RegisterPage() {
   };
 
   return (
-    <div style={{ maxWidth: '400px', margin: '100px auto' }}>
-      <h2>회원가입</h2>
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      justifyContent: 'center',
+      alignItems: 'center',
+      minHeight: '100vh',
+      backgroundColor: '#fff',
+      padding: '0 20px',
+    }}>
+      <h2 style={{ fontSize: '22px', marginBottom: '30px' }}>계정 등록</h2>
+
       <input
         type="text"
         placeholder="아이디"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
+        style={{
+          width: '100%',
+          maxWidth: '360px',
+          padding: '14px',
+          marginBottom: '14px',
+          borderRadius: '8px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
       />
+
       <input
         type="password"
-        placeholder="비밀번호"
+        placeholder="8~32자리의 비밀번호"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
-        style={{ display: 'block', margin: '10px 0', width: '100%' }}
+        style={{
+          width: '100%',
+          maxWidth: '360px',
+          padding: '14px',
+          marginBottom: '20px',
+          borderRadius: '8px',
+          border: '1px solid #ccc',
+          fontSize: '14px',
+        }}
       />
-      <button onClick={handleRegister} style={{ width: '100%' }}>회원가입</button>
+
+      <button
+        onClick={handleRegister}
+        style={{
+          width: '100%',
+          maxWidth: '360px',
+          padding: '14px',
+          backgroundColor: '#1ec800',
+          color: '#e6f7f4',
+          fontWeight: 'bold',
+          border: 'none',
+          borderRadius: '8px',
+          fontSize: '16px',
+          cursor: 'pointer',
+        }}
+      >
+        계정 등록
+      </button>
     </div>
   );
 }
