@@ -7,7 +7,7 @@
 <img src = "https://github.com/user-attachments/assets/423ccaa3-2909-4157-a6f7-6cd4bc968035" width="60%" height="60%">
 
 ## 회의록
-https://www.notion.so/202ea797346e80838c5af893b9449242?source=copy_link
+[도서관리시스템 회의록](https://www.notion.so/202ea797346e80838c5af893b9449242?source=copy_link)
 
 ## 백엔드
 
