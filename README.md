@@ -614,6 +614,52 @@ public class BookServiceImpl implements BookService {
 
 > 참고: `:id`는 도서의 고유 ID로 동적으로 라우팅됩니다.
 
+---
+
+## Home.jsx
+
+**파일 위치:** `/pages/Home.jsx`  
+**경로:** `/`
+
+### 설명
+- 사용자에게 서비스를 소개하는 첫 화면입니다.
+- 배경 이미지와 함께 따뜻한 메시지를 전달하며, `시작하기` 버튼 클릭 시 로그인 페이지(`/login`)로 이동합니다.
+
+### 주요 기능
+- 상단 배너 텍스트 표시
+- 큰 배경 이미지와 카피 문구
+- `시작하기` 버튼 → 로그인 페이지 이동
+
+### 사용 라이브러리
+- `@mui/material` (Box, Typography, Button)
+- `react-router-dom` (`useNavigate`로 페이지 이동)
+
+---
+
+## LoginPage.jsx
+
+**파일 위치:** `/pages/Login.jsx`  
+**경로:** `/login`
+
+### 설명
+- 사용자 로그인 기능을 제공합니다.
+- 아이디와 비밀번호 입력 후 로그인 요청을 보내며, 성공 시 `/main` 페이지로 이동합니다.
+- 회원가입 버튼을 통해 `/signup` 페이지로 이동할 수 있습니다.
+
+### 주요 기능
+- 아이디 / 비밀번호 입력
+- 로그인 버튼 → 백엔드로 POST 요청 (`/api/v1/users/login`)
+- 성공 시 → `/main` 페이지로 이동
+- 실패 시 오류 메시지 표시
+- 회원가입 버튼 → `/signup` 페이지로 이동
+
+### 사용 라이브러리
+- `@mui/material` (Box, TextField, Button, Typography, Divider)
+- `axios` (로그인 요청 전송)
+- `react-router-dom` (`useNavigate`)
+
+---
+
 ## BookForm.jsx
 
 React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
