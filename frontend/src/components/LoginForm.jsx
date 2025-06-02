@@ -9,7 +9,7 @@ function LoginPage() {
   const handleLogin = (e) => {
     e.preventDefault();
 
-    axios.post('http://localhost:8080/api/users/login', {
+    axios.post('http://localhost:8080/api/v1/users/login', {
       username,
       password
     }).then(res => {

@@ -1,6 +1,6 @@
 package com.book.book_service.service;
 
-import com.book.book_service.domain.User;
+import com.book.book_service.domain.Users;
 import com.book.book_service.dto.UserDTO;
 import com.book.book_service.repository.UserRepository;
 import com.book.book_service.security.JwtTokenProvider;
@@ -19,15 +19,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void register(UserDTO.JoinRequest dto) {
-        User user = new User();
+        Users user = new Users();
         user.setUsername(dto.getUsername());
-        user.setPassword(dto.getPassword()); // 👉 실제 서비스에선 암호화가 필요합니다!
+        user.setPassword(dto.getPassword());
         userRepository.save(user);
     }
 
     @Override
     public String login(UserDTO.LoginRequest dto) {
-        Optional<User> optionalUser = userRepository.findByUsername(dto.getUsername());
+        Optional<Users> optionalUser = userRepository.findByUsername(dto.getUsername());
 
         if (optionalUser.isPresent() &&
             optionalUser.get().getPassword().equals(dto.getPassword())) {

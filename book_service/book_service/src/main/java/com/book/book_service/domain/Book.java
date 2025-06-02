@@ -48,7 +48,7 @@ public class Book {
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User user;
+    private Users user;
 
     public static Book dtotoBook (BookDTO.Post bookDTO){
         Book book = new Book();

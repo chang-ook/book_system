@@ -1,17 +1,16 @@
 package com.book.book_service.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.Map;
 import com.book.book_service.dto.UserDTO;
 import com.book.book_service.service.UserService;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RestController
-@RequestMapping("/api/users")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
 public class UserController {
 
