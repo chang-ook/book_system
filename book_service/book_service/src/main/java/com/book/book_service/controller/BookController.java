@@ -44,19 +44,4 @@ public class BookController {
         return bookService.findBooks();
     }
 
-//    // 글로벌 예외 처리 테스트용 엔드포인트
-//    @GetMapping("/test/notfound")
-//    public Book testEntityNotFoundException() {
-//        throw new jakarta.persistence.EntityNotFoundException("테스트: 책을 찾을 수 없습니다!");
-//    }
-//
-//    @GetMapping("/test/illegal")
-//    public String testIllegalArgument() {
-//        throw new IllegalArgumentException("테스트: 잘못된 요청입니다.");
-//    }
-//
-//    @GetMapping("/test/general")
-//    public void testGeneralException() throws Exception {
-//        throw new Exception("테스트: 알 수 없는 예외 발생");
-//    }
 }
