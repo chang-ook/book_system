@@ -600,6 +600,66 @@ public class BookServiceImpl implements BookService {
 
 ## 프론트엔드
 
+## 라우팅 정보
+
+| 경로(Path)            | 컴포넌트(Component)        | 설명                             |
+|------------------------|----------------------------|----------------------------------|
+| `/`                    | `HomePage`                 | 앱 시작 페이지 (홈)              |
+| `/register`            | `RegisterPage`             | 도서 등록 페이지                 |
+| `/books/:id`           | `DetailPage`               | 도서 상세 조회 페이지            |
+| `/books/edit/:id`      | `EditPage`                 | 도서 수정 페이지                 |
+| `/login`               | `LoginPage`                | 로그인 페이지                    |
+| `/signup`              | `RegisterLoginPage`        | 회원가입 페이지                  |
+| `/main`                | `MainPage`                 | 메인 도서 목록 페이지            |
+
+> 참고: `:id`는 도서의 고유 ID로 동적으로 라우팅됩니다.
+
+---
+
+## Home.jsx
+
+**파일 위치:** `/pages/Home.jsx`  
+**경로:** `/`
+
+### 설명
+- 사용자에게 서비스를 소개하는 첫 화면입니다.
+- 배경 이미지와 함께 따뜻한 메시지를 전달하며, `시작하기` 버튼 클릭 시 로그인 페이지(`/login`)로 이동합니다.
+
+### 주요 기능
+- 상단 배너 텍스트 표시
+- 큰 배경 이미지와 카피 문구
+- `시작하기` 버튼 → 로그인 페이지 이동
+
+### 사용 라이브러리
+- `@mui/material` (Box, Typography, Button)
+- `react-router-dom` (`useNavigate`로 페이지 이동)
+
+---
+
+## LoginPage.jsx
+
+**파일 위치:** `/pages/Login.jsx`  
+**경로:** `/login`
+
+### 설명
+- 사용자 로그인 기능을 제공합니다.
+- 아이디와 비밀번호 입력 후 로그인 요청을 보내며, 성공 시 `/main` 페이지로 이동합니다.
+- 회원가입 버튼을 통해 `/signup` 페이지로 이동할 수 있습니다.
+
+### 주요 기능
+- 아이디 / 비밀번호 입력
+- 로그인 버튼 → 백엔드로 POST 요청 (`/api/v1/users/login`)
+- 성공 시 → `/main` 페이지로 이동
+- 실패 시 오류 메시지 표시
+- 회원가입 버튼 → `/signup` 페이지로 이동
+
+### 사용 라이브러리
+- `@mui/material` (Box, TextField, Button, Typography, Divider)
+- `axios` (로그인 요청 전송)
+- `react-router-dom` (`useNavigate`)
+
+---
+
 ## BookForm.jsx
 
 React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
@@ -1160,4 +1220,73 @@ export default BookForm;
 - **하단 다이얼로그**: OpenAI API 키를 입력받는 팝업
 
 ---
+# 📘 BookList.jsx
+
+`BookList.jsx`는 도서 목록을 카드 형태로 렌더링하는 컴포넌트입니다.  
+React와 Axios, React Router를 활용하여 백엔드에서 도서 데이터를 받아와 리스트로 출력하고, 각 도서를 클릭하면 상세 페이지로 이동합니다.
+
+---
+
+## 📌 주요 기능
+
+- 📚 전체 도서 목록 불러오기 (`GET /api/v1/books`)
+- 🔍 도서 클릭 시 상세 페이지로 이동 (`/books/{id}`)
+- 🖼️ 도서 표지 이미지 출력
+- ✨ 마우스 호버 시 부드러운 카드 애니메이션
+
+---
+
+## 🛠 사용 기술
+
+- React (`useEffect`, `useState`)
+- Axios
+- React Router DOM (`useNavigate`)
+- 인라인 스타일을 활용한 CSS 처리
+
+---
+
+## 🖼️ 화면 구성
+
+| 요소          | 설명                                      |
+|---------------|-------------------------------------------|
+| 카드 레이아웃 | 도서 리스트를 Flexbox로 정렬               |
+| 표지 이미지   | 도서의 `cover_image` URL을 통해 출력       |
+| 제목 출력     | 도서의 `title` 출력                       |
+| 업로드 날짜   | `upload_date`를 `YYYY-MM-DD`로 출력       |
+| 마우스 호버   | `transform: translateY(-5px)` 효과 적용   |
+
+---
+
+## 📄 예시 코드 구조
+
+```jsx
+useEffect(() => {
+  axios.get('http://localhost:8080/api/v1/books')
+    .then(res => setBooks(res.data))
+    .catch(err => console.error(err));
+}, []);
+
+{books.map(book => (
+  <div key={book.bookId} onClick={() => navigate(`/books/${book.id}`)}>
+    <img src={book.cover_image} />
+    <p>{book.title}</p>
+    <p>{book.upload_date?.substring(0, 10)}</p>
+  </div>
+))}
+```
+
+---
+
+## 📎 기타 사항
+
+- 백엔드 API 주소는 `http://localhost:8080`으로 설정되어 있으며, 실제 배포 시에는 환경 변수로 관리하는 것이 좋습니다.
+- 도서 ID로 접근하는 라우터가 `/books/:id` 형태로 연결되어 있어야 합니다.
+
+---
+
+## 📚 관련 파일
+
+- `MainPage.jsx`  
+  → 해당 컴포넌트를 사용하여 도서 목록 메인 화면 구성
+
 
