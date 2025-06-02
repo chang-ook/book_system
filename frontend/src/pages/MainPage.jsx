@@ -25,7 +25,11 @@ function MainPage() {
       <Button onClick={() => window.location.href = "/register"} variant="outlined">
         산책 가기
       </Button>
+      <Button onClick={() => window.location.href = "/login"} variant="outlined">
+        로그인
+      </Button>
     </div>
+    
 
     <hr />
 
