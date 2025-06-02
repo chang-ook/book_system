@@ -599,9 +599,11 @@ public class BookServiceImpl implements BookService {
 ```
 
 ## 프론트엔드
-React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
 
 ## BookForm.jsx
+
+React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
+
 
 ### 주요 기능
 - 사용자 입력으로 책 제목, 내용 등록
@@ -726,7 +728,53 @@ function BookForm() {
 
 export default BookForm;
 ```
+### 파일: `RegisterPage.jsx`
+`RegisterPage`는 `BookForm` 컴포넌트를 감싸는 상위 페이지로, 책 등록 UI를 위한 스타일 및 레이아웃을 구성합니다.
 
+#### 주요 역할
+- 배경색, 여백, 카드형 컨테이너 설정
+- 중앙 정렬된 `📚 책 등록` 제목 및 구분선 표시
+- 내부에 `BookForm` 렌더링
+
+#### 주요 스타일
+- `#e6f7f4` 배경색으로 시각적 부드러움 제공
+- 흰색 컨테이너에 그림자 및 라운드 효과 적용
+- 중앙 정렬 및 반응형 여백 설정
+
+```jsx
+import React from 'react';
+import BookForm from '../components/BookForm';
+
+function RegisterPage() {
+  return (
+    <div style={{ backgroundColor: '#e6f7f4', minHeight: '100vh', padding: '50px 20px' }}>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '16px',
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '40px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+      }}>
+        <h2 style={{
+          textAlign: 'center',
+          fontFamily: 'Noto Sans KR',
+          marginBottom: '20px',
+          fontSize: '28px'
+        }}>
+          📚 책 등록
+        </h2>
+        <hr style={{ marginBottom: '30px' }} />
+        <BookForm />
+      </div>
+    </div>
+  );
+}
+
+export default RegisterPage;
+```
+
+---
 ---
 
 > 전체 시스템은 도메인, API 명세서, 백엔드(Spring Boot) 구조와 완전하게 연동되며, 이 프론트엔드는 `localhost:3000`에서 실행하여 `localhost:8080` 서버와 통신합니다.
