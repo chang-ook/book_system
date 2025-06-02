@@ -22,7 +22,7 @@ function BookDetail() {
     axios.delete(`http://localhost:8080/api/v1/books/${id}`)
       .then(() => {
         alert('삭제 완료');
-        navigate('/');
+        navigate('/main');
       });
   };
 
@@ -91,7 +91,7 @@ const prompt = `너는 세계적인 책 평론가이자 북 큐레이터야.
           <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
             <Button variant="contained" color="primary" onClick={() => navigate(`/books/edit/${id}`)}>수정</Button>
             <Button variant="contained" color="error" onClick={handleDelete}>삭제</Button>
-            <Button variant="outlined" onClick={() => navigate(`/`)}>책 목록보기</Button>
+            <Button variant="outlined" onClick={() => navigate(`/main`)}>책 목록보기</Button>
             <Button variant="contained" color="success" onClick={handleOpenDialog}>유사 도서 추천</Button>
           </div>
 
