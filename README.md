@@ -1346,3 +1346,75 @@ useEffect(() => {
 
 ## 📎 기타
 - 페이지 방문 시 자동으로 책 리스트를 렌더링하며, 클릭 시 개별 도서 상세 페이지(`/books/:id`)로 이동합니다.
+
+
+# 📄 RegisterPage.jsx
+
+`RegisterPage`는 사용자가 새로운 계정을 생성(회원가입)할 수 있도록 하는 React 기반 페이지 컴포넌트입니다. 사용자로부터 ID와 비밀번호를 입력받고, 백엔드 API(`/api/v1/users/register`)를 호출하여 회원가입을 처리합니다.
+
+---
+
+## ✅ 주요 기능
+- 사용자 ID, 비밀번호 입력
+- 회원가입 요청(axios POST)
+- 성공 시 `/login` 페이지로 이동
+- 실패 시 에러 메시지 표시
+
+---
+
+## 🔧 사용 기술
+- React (Functional Component)
+- React Router (`useNavigate`)
+- Axios
+
+---
+
+## 💡 UI 스타일 요약
+- 가운데 정렬된 로그인 카드 UI
+- 부드러운 흰 배경 및 회색 테두리
+- 최대 너비 제한(360px)과 반응형 스타일링
+- 버튼 클릭 시 시각적 반응
+
+---
+
+## 📦 주요 코드 설명
+
+### 📌 상태 관리
+```js
+const [username, setUsername] = useState('');
+const [password, setPassword] = useState('');
+```
+
+### 📌 회원가입 처리 함수
+```js
+const handleRegister = async () => {
+  try {
+    await axios.post('http://localhost:8080/api/v1/users/register', {
+      username,
+      password,
+    });
+    alert('회원가입 성공!');
+    navigate('/login');
+  } catch (err) {
+    alert('회원가입 실패: ' + (err.response?.data?.message || '서버 오류'));
+  }
+};
+```
+
+### 📌 입력 폼 + 버튼
+```jsx
+<input type="text" placeholder="아이디" value={username} onChange={...} />
+<input type="password" placeholder="비밀번호" value={password} onChange={...} />
+<button onClick={handleRegister}>계정 등록</button>
+```
+
+---
+
+## 🌐 연동 백엔드 API
+- **POST** `http://localhost:8080/api/v1/users/register`
+  - Request Body: `{ username, password }`
+  - Response: 200 OK 또는 에러 메시지 반환
+
+---
+
+
