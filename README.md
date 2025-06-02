@@ -904,3 +904,260 @@ export default BookDetail;
 - 반응형 레이아웃 및 부드러운 색감 적용 (`#e6f7f4` 배경)
 
 ---
+
+# RegisterPage / EditPage / BookForm 컴포넌트
+
+### RegisterPage.jsx
+- 책 등록용 페이지입니다.
+- 배경색과 정중앙 카드 스타일 UI로 구성되어 있으며 `BookForm` 컴포넌트를 포함합니다.
+- 제목: "📚 책 등록"
+
+### EditPage.jsx
+- 책 수정용 페이지입니다.
+- RegisterPage와 동일한 레이아웃 구성이며, `BookForm`을 재사용하여 수정 기능을 구현합니다.
+- 내부 로직에서 ID를 기반으로 기존 데이터를 불러오는 추가 처리가 필요합니다. (현재는 RegisterPage와 구조만 동일)
+
+```jsx
+// EditPage.jsx
+import React from 'react';
+import BookEdit from '../components/BookEdit';
+
+function EditPage() {
+  return (
+    <div style={{ backgroundColor: '#e6f7f4', minHeight: '100vh', padding: '50px 20px' }}>
+      <div style={{
+        backgroundColor: 'white',
+        borderRadius: '16px',
+        maxWidth: '800px',
+        margin: '0 auto',
+        padding: '40px',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)'
+      }}>
+        <h2 style={{
+          textAlign: 'center',
+          fontFamily: 'Noto Sans KR',
+          marginBottom: '20px',
+          fontSize: '28px'}}>✏️ 도서 수정</h2>
+          <hr></hr>
+        <BookEdit />
+      </div>
+    </div>
+  );
+}
+export default EditPage;
+
+
+
+    // <div>
+    //   <BookEdit />
+    // </div>
+```
+
+### BookForm.jsx
+- 도서 등록 및 수정에 사용되는 공통 폼 컴포넌트입니다.
+- 제목, 내용 입력과 AI 기반 표지 이미지 생성을 지원합니다.
+- 이미지 생성 시 OpenAI GPT-4o와 DALL·E API를 연동하여 자동 번역 + 이미지 생성 과정을 처리합니다.
+
+```jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField, CircularProgress
+} from '@mui/material';
+
+function BookForm() {
+  const [title, setTitle] = useState('');
+  const [contents, setContents] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenDialog = () => setIsDialogOpen(true);
+  const handleCloseDialog = () => setIsDialogOpen(false);
+
+  const handleImageGenerate = async () => {
+    if (!apiKey) return alert('API 키를 입력해주세요.');
+    if (!title || !contents) return alert('제목과 내용을 먼저 입력해주세요.');
+
+    try {
+      const translationResponse = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `Translate the following book title and description into English:\n\n제목: ${title}\n내용: ${contents}`
+                }
+              ]
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const translatedText = translationResponse.data.choices[0].message.content;
+      const lines = translatedText.split('\n').filter(Boolean);
+      const translatedTitle = lines.find(line => line.toLowerCase().startsWith('title:'))?.split(':')[1]?.trim() || title;
+      const translatedContents = lines.find(line => line.toLowerCase().startsWith('description:'))?.split(':')[1]?.trim() || contents;
+
+      const generatedPrompt = `Create a professional book cover illustration based on the following details:\n\nTitle: \"${translatedTitle}\"\nDescription: \"${translatedContents}\"\n\nStyle: Modern and clean book cover design. Focus on visual storytelling that reflects the book's theme. Use realistic or semi-realistic elements. Avoid text or title in the image.\n\nThe image should resemble a real book cover artwork, suitable for use on printed or digital books. Use appropriate colors, composition, and mood to reflect the story genre and tone.`;
+
+      setIsLoading(true);
+
+      const response = await axios.post(
+        'https://api.openai.com/v1/images/generations',
+        {
+          prompt: generatedPrompt,
+          n: 1,
+          size: '512x512'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const image = response.data.data[0].url;
+      setImageUrl(image);
+      setIsLoading(false);
+      handleCloseDialog();
+
+    } catch (error) {
+      console.error(error);
+      alert('이미지 생성 실패');
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('http://localhost:8080/api/v1/books', {
+      title,
+      contents,
+      coverImage: imageUrl
+    }).then(() => {
+      alert('등록 완료');
+      navigate('/');
+    }).catch(err => console.error(err));
+  };
+
+  const handleCancel = () => {
+    navigate('/');
+  };
+
+  return (
+    <div style={{ width: '100%', maxWidth: '800px', margin: '0 auto', padding: '20px' }}>
+      <div style={{
+        display: 'flex', justifyContent: 'space-around',
+        alignItems: 'flex-start', marginTop: '30px', flexWrap: 'wrap', gap: '20px'
+      }}>
+        {/* 이미지 영역 */}
+        <div style={{ textAlign: 'center', flex: '1 1 360px', maxWidth: '360px', marginBottom: '20px' }}>
+          <div style={{
+            width: '100%', height: '480px', border: '1px solid #aaa', borderRadius: '12px',
+            marginBottom: '20px', display: 'flex', justifyContent: 'center',
+            alignItems: 'center', backgroundColor: '#fafafa'
+          }}>
+            {isLoading ? (
+              <CircularProgress />
+            ) : imageUrl ? (
+              <img src={imageUrl} alt="cover" style={{ width: "90%", height: "90%", borderRadius: '12px' }} />
+            ) : (
+              <span>표지 미리보기</span>
+            )}
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            <Button onClick={handleOpenDialog} variant="contained" color="primary">이미지 생성</Button>
+            <Button onClick={handleOpenDialog} variant="contained" color="primary">재생성</Button>
+          </div>
+        </div>
+
+        {/* 입력 영역 */}
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '20px' }}>
+            <label htmlFor="title">1. 작품 제목을 입력해주세요</label><br />
+            <input id="title" type="text" value={title} onChange={e => setTitle(e.target.value)} required style={{ width: '300px', height: '30px' }} />
+          </div>
+          <div style={{ marginBottom: '20px' }}>
+            <label htmlFor="contents">2. 작품 내용을 입력해주세요</label><br />
+            <textarea id="contents" value={contents} onChange={e => setContents(e.target.value)} required style={{ width: '300px', height: '120px', resize: 'none', padding: '5px' }} />
+          </div>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '10px' }}>
+            <Button variant="contained" color="primary" type="submit">등록</Button>
+            <Button variant="contained" color="primary" type="button" onClick={handleCancel}>취소</Button>
+          </div>
+        </form>
+      </div>
+
+      {/* API 키 입력 모달 */}
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>OpenAI API 키 입력</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="API Key"
+            type="password"
+            fullWidth
+            variant="standard"
+            value={apiKey}
+            onChange={(e) => setApiKey(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>취소</Button>
+          <Button onClick={handleImageGenerate}>이미지 생성</Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+}
+
+export default BookForm;
+
+```
+
+### 주요 기능
+
+| 기능 | 설명 |
+|------|------|
+| 도서 등록 | 제목, 내용 입력 후 `등록` 버튼 클릭 시 서버에 POST 요청 |
+| 도서 수정 (EditPage에서 활용 가능) | 기존 도서 정보를 불러와 입력 폼에 표시하고, 수정 후 저장 가능 |
+| AI 이미지 생성 | OpenAI GPT-4o + DALL·E 연동을 통해 도서 내용 기반 표지 이미지 생성 |
+| API 키 입력 | 이미지 생성 시 사용자에게 OpenAI API 키를 다이얼로그로 입력받음 |
+| 이미지 미리보기 | 생성된 이미지가 우측 영역에 미리보기 형태로 출력됨 |
+| 로딩 상태 표시 | 이미지 생성 시 로딩 스피너 출력 |
+| 등록 취소 | `취소` 버튼 클릭 시 메인 목록(`/`)으로 이동 |
+
+### 사용 기술
+
+- **React** - UI 구성 및 상태 관리
+- **React Router Dom** - 라우팅 및 네비게이션
+- **Axios** - OpenAI API 및 내부 서버 API 통신
+- **Material-UI (MUI)** - 버튼, 다이얼로그, 로딩 스피너 등 UI 컴포넌트 사용
+- **OpenAI GPT-4o** - 도서 제목/내용을 영어로 번역
+- **OpenAI DALL·E** - 번역된 텍스트를 기반으로 이미지 생성
+
+### UI 구성 설명
+
+- **왼쪽 영역**: 생성된 이미지 미리보기 영역. 없을 경우 기본 안내 텍스트 표시.
+- **오른쪽 영역**: 도서 제목 및 내용 입력 폼
+- **하단 다이얼로그**: OpenAI API 키를 입력받는 팝업
+
+---
+
