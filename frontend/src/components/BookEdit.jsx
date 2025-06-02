@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
-  Box, Button, TextField, Typography, Grid, Paper
+  Box, Button, TextField, Grid
 } from '@mui/material';
 
 function BookEdit() {
@@ -32,81 +32,65 @@ function BookEdit() {
   };
 
   return (
-    <Box
-      sx={{
-        minHeight: '100vh',
-        backgroundColor: '#e7f4f3',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        py: 6,
-      }}
-    >
-      <Paper
-        elevation={3}
-        sx={{
-          p: 4,
-          width: '90%',
-          maxWidth: 900,
-          borderRadius: 4,
-          backgroundColor: '#fff',
-        }}
-      >
-        <Typography variant="h4" align="center" gutterBottom>
-          도서 수정
-        </Typography>
+    <form onSubmit={handleUpdate}>
+      <Grid container spacing={4} wrap="nowrap" alignItems="center">
+        {/* 이미지 영역 */}
+        <Grid item xs={3}>
+          <img
+            src={coverImage}
+            alt="도서 이미지"
+            style={{
+              width: '100%',
+              maxWidth: '360px',
+              height: 'auto',
+              borderRadius: '8px',
+              display: 'block',
+              margin: '0 auto',
+            }}
+          />
+        </Grid>
 
-        <form onSubmit={handleUpdate}>
-          <Grid container spacing={4}>
-            {/* 이미지 박스 */}
-            <Grid item xs={12} md={5}>
-              <Box
-                sx={{
-                  width: '100%',
-                  paddingTop: '140%',
-                  backgroundImage: `url(${coverImage})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  border: '2px solid #1565c0',
-                  borderRadius: 2,
-                }}
-              />
-            </Grid>
-
-            {/* 입력 폼 */}
-            <Grid item xs={12} md={7}>
-              <TextField
-                label="제목"
-                variant="outlined"
-                fullWidth
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                sx={{ mb: 3 }}
-              />
-              <TextField
-                label="내용"
-                variant="outlined"
-                fullWidth
-                multiline
-                minRows={6}
-                value={contents}
-                onChange={(e) => setContents(e.target.value)}
-              />
-            </Grid>
-          </Grid>
-
-          {/* 버튼 */}
-          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 3 }}>
-            <Button type="submit" variant="contained" color="primary" sx={{ px: 4 }}>
-              수정
-            </Button>
-            <Button variant="outlined" color="primary" sx={{ px: 4 }} onClick={() => navigate(-1)}>
-              취소
-            </Button>
+        {/* 입력 폼 영역 */}
+        <Grid item xs={9}>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              height: '100%',
+            }}
+          >
+            <TextField
+              label="제목"
+              variant="outlined"
+              fullWidth
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              sx={{ mb: 3 }}
+            />
+            <TextField
+              label="내용"
+              variant="outlined"
+              fullWidth
+              multiline
+              minRows={6}
+              value={contents}
+              onChange={(e) => setContents(e.target.value)}
+            />
           </Box>
-        </form>
-      </Paper>
-    </Box>
+        </Grid>
+      </Grid>
+
+      {/* 버튼 */}
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, gap: 3 }}>
+        <Button type="submit" variant="contained" color="primary" sx={{ px: 4 }}>
+          수정
+        </Button>
+        <Button variant="outlined" color="primary" sx={{ px: 4 }} onClick={() => navigate(-1)}>
+          취소
+        </Button>
+      </Box>
+    </form>
   );
 }
 
