@@ -427,3 +427,147 @@ public class BookServiceImpl implements BookService {
 
 
 ## 프론트엔드
+
+## 도메인 설계
+<img src="https://github.com/user-attachments/assets/6b59b502-1862-4015-92d4-634766dad17c" width="30%" height="30%">
+
+## API명세서
+<img src="https://github.com/user-attachments/assets/423ccaa3-2909-4157-a6f7-6cd4bc968035" width="60%" height="60%">
+
+## 회의록
+[도서관리시스템 회의록](https://www.notion.so/202ea797346e80838c5af893b9449242?source=copy_link)
+
+---
+
+## 프론트엔드
+React 기반의 도서 등록 및 표지 이미지 생성 기능을 제공하는 UI입니다. 사용자가 입력한 도서 정보를 기반으로 OpenAI API를 호출하여 표지를 자동 생성하고, 해당 정보를 백엔드 서버로 전송합니다.
+
+### 주요 기능
+- 사용자 입력으로 책 제목, 내용 등록
+- OpenAI GPT-4o를 통한 번역 요청
+- DALL·E 이미지 생성 API로 표지 생성
+- 표지 미리보기 및 재생성
+- 최종 등록 시 Spring Boot 백엔드로 POST 요청 전송
+
+### 사용 기술
+- React
+- Axios
+- Material UI
+- OpenAI GPT-4o + DALL·E API
+
+### 파일: `BookForm.jsx`
+```jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {
+  Button, Dialog, DialogActions, DialogContent, DialogTitle,
+  TextField, CircularProgress
+} from '@mui/material';
+
+function BookForm() {
+  const [title, setTitle] = useState('');
+  const [contents, setContents] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [apiKey, setApiKey] = useState('');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleOpenDialog = () => setIsDialogOpen(true);
+  const handleCloseDialog = () => setIsDialogOpen(false);
+
+  const handleImageGenerate = async () => {
+    if (!apiKey) return alert('API 키를 입력해주세요.');
+    if (!title || !contents) return alert('제목과 내용을 먼저 입력해주세요.');
+
+    try {
+      const translationResponse = await axios.post(
+        'https://api.openai.com/v1/chat/completions',
+        {
+          model: 'gpt-4o',
+          messages: [
+            {
+              role: 'user',
+              content: [
+                {
+                  type: 'text',
+                  text: `Translate the following book title and description into English:\n\n제목: ${title}\n내용: ${contents}`
+                }
+              ]
+            }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const translatedText = translationResponse.data.choices[0].message.content;
+      const lines = translatedText.split('\n').filter(Boolean);
+      const translatedTitle = lines.find(line => line.toLowerCase().startsWith('title:'))?.split(':')[1]?.trim() || title;
+      const translatedContents = lines.find(line => line.toLowerCase().startsWith('description:'))?.split(':')[1]?.trim() || contents;
+
+      const generatedPrompt = `Create a professional book cover illustration based on the following details:\n\nTitle: \"${translatedTitle}\"\nDescription: \"${translatedContents}\"\n\nStyle: Modern and clean book cover design. Focus on visual storytelling that reflects the book's theme. Use realistic or semi-realistic elements. Avoid text or title in the image.\n\nThe image should resemble a real book cover artwork, suitable for use on printed or digital books. Use appropriate colors, composition, and mood to reflect the story genre and tone.`;
+
+      setIsLoading(true);
+
+      const response = await axios.post(
+        'https://api.openai.com/v1/images/generations',
+        {
+          prompt: generatedPrompt,
+          n: 1,
+          size: '512x512'
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${apiKey}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      const image = response.data.data[0].url;
+      setImageUrl(image);
+      setIsLoading(false);
+      handleCloseDialog();
+
+    } catch (error) {
+      console.error(error);
+      alert('이미지 생성 실패');
+      setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    axios.post('http://localhost:8080/api/v1/books', {
+      title,
+      contents,
+      coverImage: imageUrl
+    }).then(() => {
+      alert('등록 완료');
+      navigate('/');
+    }).catch(err => console.error(err));
+  };
+
+  const handleCancel = () => {
+    navigate('/');
+  };
+
+  return (
+    <div>... (생략된 렌더링 UI는 원본 코드 참조)</div>
+  );
+}
+
+export default BookForm;
+```
+
+---
+
+> 전체 시스템은 도메인, API 명세서, 백엔드(Spring Boot) 구조와 완전하게 연동되며, 이 프론트엔드는 `localhost:3000`에서 실행하여 `localhost:8080` 서버와 통신합니다.
+
+---
